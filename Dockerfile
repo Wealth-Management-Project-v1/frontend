@@ -4,6 +4,6 @@ WORKDIR         /app
 COPY            ./ /app/
 RUN             npm ci && npm run build
 
-#stage 2: Run
 FROM            docker.io/library/nginx
-COPY            --from=builder /app/dist/* /usr/share/nginx/index.html
+COPY            --from=builder /app/dist/index.html /usr/share/nginx/index.html
+
