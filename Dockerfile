@@ -6,4 +6,4 @@ RUN             npm ci && npm run build
 
 FROM            docker.io/library/nginx
 COPY            --from=builder /app/dist/assets/ /usr/share/nginx/assets/
-COPY            --from=builder /app/dist/index.html /usr/share/nginx.html
+COPY            --from=builder /app/dist/ /usr/share/nginx/html/
