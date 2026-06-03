@@ -7,4 +7,4 @@ docker-build:
 eks-deploy:
 	git pull
 	aws eks update-kubeconfig --name dev
-	helm upgrade -i frontend helm -f helm/values/frontend
+	helm upgrade -i frontend helm -f helm/values/frontend --set image_tag=$(image_tag)
