@@ -22,6 +22,7 @@ argocd-deploy:
 		--username admin \
 		--password $(argocd_password) \
 
+
 	argocd app create frontend \
 		--repo https://github.com/Wealth-Management-Project-v1/helm-v1.git \
 		--path . \
