@@ -12,18 +12,20 @@ eks-deploy:
 	helm upgrade -i frontend helm -f helm/values/frontend.yaml --set image_tag=$(image_tag)
 
 
+
 argocd-deploy:
 
 	aws eks update-kubeconfig --region us-east-1 --name wmp-dev
 
-	ARGOCD_SERVER=$$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}') && \
-	ARGOCD_PASSWORD=$$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d) && \
-	test -n "$$ARGOCD_SERVER" && \
-	test -n "$$ARGOCD_PASSWORD" && \
-	argocd login "$$ARGOCD_SERVER" \
-		--insecure \
-		--username admin \
-		--password "$$ARGOCD_PASSWORD"
+	@echo "Checking Kubernetes connection..."
+	kubectl get nodes
+
+	@ARGOCD_SERVER=$$(kubectl get svc argocd-server -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'); \
+	ARGOCD_PASSWORD=$$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d); \
+	if [ -z "$$ARGOCD_SERVER" ]; then echo "ERROR: ArgoCD server hostname is empty"; exit 1; fi; \
+	if [ -z "$$ARGOCD_PASSWORD" ]; then echo "ERROR: ArgoCD password is empty"; exit 1; fi; \
+	echo "ArgoCD server hostname retrieved successfully"; \
+	argocd login "$$ARGOCD_SERVER" --insecure --username admin --password "$$ARGOCD_PASSWORD"
 
 	argocd app create analytics-service \
 		--repo https://github.com/Wealth-Management-Project-v1/helm-v1.git \
@@ -35,4 +37,3 @@ argocd-deploy:
 		--upsert \
 		--values values/analytics-service.yaml \
 		--helm-set-string image_tag=$(image_tag)
-
