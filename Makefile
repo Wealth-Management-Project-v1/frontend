@@ -13,7 +13,6 @@ eks-deploy:
 
 
 argocd-deploy:
-	git pull
 
 	aws eks update-kubeconfig --region us-east-1 --name wmp-dev
 
